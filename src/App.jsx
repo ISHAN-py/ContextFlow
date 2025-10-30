@@ -1,6 +1,60 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { supabase } from './supabaseClient';
 
 function App() {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState(''); // 'loading', 'success', 'error'
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('loading');
+    setMessage('');
+
+    try {
+      console.log('Submitting email:', email);
+      console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+      
+      // Insert email into Supabase
+      const { data, error } = await supabase
+        .from('waitlist')
+        .insert([
+          { 
+            email: email,
+            subscribed_at: new Date().toISOString()
+          }
+        ])
+        .select();
+
+      console.log('Supabase response:', { data, error });
+
+      if (error) {
+        console.error('Supabase error:', error);
+        // Check if it's a duplicate email error
+        if (error.code === '23505') {
+          setStatus('error');
+          setMessage('This email is already on the waitlist!');
+        } else {
+          setStatus('error');
+          setMessage(`Error: ${error.message || 'Something went wrong'}`);
+        }
+      } else {
+        setStatus('success');
+        setMessage('Thanks for joining! You\'re on the waitlist.');
+        setEmail('');
+        
+        setTimeout(() => {
+          setStatus('');
+          setMessage('');
+        }, 5000);
+      }
+    } catch (error) {
+      console.error('Error submitting to waitlist:', error);
+      setStatus('error');
+      setMessage(`Error: ${error.message || 'Something went wrong. Please try again.'}`);
+    }
+  };
+
   return (
     <div className="relative min-h-screen w-full bg-black overflow-hidden flex items-center justify-center">
   {/* Subtle Spotlight/Orb Glow Background - consulting.com style */}
@@ -96,10 +150,44 @@ function App() {
           Coming Soon
         </p>
 
-        {/* One-Liner remains the same */}
-        <p className="mt-6 text-xl md:text-2xl lg:text-3xl font-light text-white/80 leading-relaxed max-w-4xl mx-auto">
-          Reclaim your attention. We transform your scattered digital life into synthesized, queryable knowledge.
+        {/* New Subheading */}
+        <p className="mt-8 text-lg md:text-xl lg:text-2xl font-normal text-white/85 leading-relaxed max-w-3xl mx-auto">
+          For the creators drowning in saved posts and notes — meet your clarity engine.
+          Every week, get ideas, insights, and scripts built from what you consume with ContextFlow
         </p>
+
+        {/* Waitlist Form */}
+        <form onSubmit={handleSubmit} className="mt-12 max-w-md mx-auto">
+          <div className="flex flex-col sm:flex-row gap-3 items-center">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
+              disabled={status === 'loading'}
+              className="w-full sm:flex-1 px-6 py-4 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+            />
+            <button
+              type="submit"
+              disabled={status === 'loading'}
+              className="w-full sm:w-auto px-8 py-4 rounded-full bg-white text-black font-semibold hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-lg shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+            >
+              {status === 'loading' ? 'Joining...' : 'Join Waitlist'}
+            </button>
+          </div>
+          
+          {/* Status Messages */}
+          {message && (
+            <p className={`mt-4 text-sm md:text-base font-medium transition-all duration-300 ${
+              status === 'success' ? 'text-green-400' : 'text-red-400'
+            }`}>
+              {message}
+            </p>
+          )}
+        </form>
+
+        
       </div>
 
       {/* Subtle bottom glow */}
