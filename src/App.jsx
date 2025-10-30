@@ -39,8 +39,31 @@ function App() {
           setMessage(`Error: ${error.message || 'Something went wrong'}`);
         }
       } else {
+        // Email successfully added to database, now send welcome email
+        console.log('Sending welcome email to:', email);
+        
+        try {
+          const emailResponse = await fetch('/api/send-welcome-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email }),
+          });
+
+          const emailResult = await emailResponse.json();
+          console.log('Email API response:', emailResult);
+
+          if (!emailResult.success) {
+            console.error('Failed to send welcome email, but user was added to waitlist');
+          }
+        } catch (emailError) {
+          console.error('Error sending welcome email:', emailError);
+          // Don't show error to user since they were successfully added to waitlist
+        }
+
         setStatus('success');
-        setMessage('Thanks for joining! You\'re on the waitlist.');
+        setMessage('Thanks for joining! Check your email for confirmation.');
         setEmail('');
         
         setTimeout(() => {
