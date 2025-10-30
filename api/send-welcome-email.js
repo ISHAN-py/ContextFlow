@@ -32,7 +32,7 @@ export default async function handler(req, res) {
 
     // Send welcome email
     const data = await resend.emails.send({
-      from: 'ContextFlow <onboarding@resend.dev>',
+      from: 'Ishan from ContextFlow <ishansrivastava@contextflow.tech>',
       to: email,
       subject: 'Welcome to ContextFlow! 🚀',
       html: `
