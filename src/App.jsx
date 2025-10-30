@@ -163,10 +163,23 @@ function App() {
 
       {/* Main Content */}
       <div className="relative z-20 text-center px-6 max-w-5xl mx-auto">
-        {/* Main Heading */}
-        <h1 className="text-6xl md:text-8xl lg:text-9xl font-extrabold text-white tracking-tight leading-none">
-          Context Flow.
-        </h1>
+        {/* Main Heading with Logo */}
+        <div className="flex items-center justify-center gap-2 md:gap-3 lg:gap-4">
+          <h1 className="text-6xl md:text-8xl lg:text-9xl font-extrabold text-white tracking-tight leading-none md:whitespace-nowrap">
+            Context Flow.
+          </h1>
+          <img 
+            src="/logo.png" 
+            alt="ContextFlow Logo" 
+            className="h-[80px] md:h-[120px] lg:h-[160px] w-auto"
+            style={{ 
+              marginTop: '-0.2em',
+              objectFit: 'contain',
+              objectPosition: 'center',
+              transform: 'scale(1.5)'
+            }}
+          />
+        </div>
 
         {/* Subheading */}
         <p className="mt-4 text-2xl md:text-3xl lg:text-4xl font-semibold text-white/90 tracking-tight">
