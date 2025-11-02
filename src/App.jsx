@@ -169,7 +169,7 @@ function App() {
             Context Flow.
           </h1>
           <img 
-            src="/logo.png" 
+            src="/logocom.png" 
             alt="ContextFlow Logo" 
             className="h-[80px] md:h-[120px] lg:h-[160px] w-auto"
             style={{ 
